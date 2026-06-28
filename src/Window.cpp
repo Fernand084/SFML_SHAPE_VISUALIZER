@@ -1,4 +1,5 @@
 #include "Window.h"
+#include <SFML/Graphics.hpp>
 
 Window::Window() { Setup("Window", sf::Vector2u(640, 480)); }
 
@@ -58,6 +59,7 @@ void Window::EndDraw() { m_window.display(); }
 bool Window::IsDone() { return m_isDone; }
 bool Window::IsFullscreen() { return m_isFullscreen; }
 sf::Vector2u Window::GetWindowSize() { return m_windowSize; }
+sf::RenderWindow *Window::GetRenderWindow() { return &m_window; }
 void Window::Draw(sf::Drawable &l_drawable)
 {
     m_window.draw(l_drawable);

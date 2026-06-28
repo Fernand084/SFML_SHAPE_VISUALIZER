@@ -1,53 +1,41 @@
 #include "Game.h"
 
-Game::Game() : m_window("Chapter 2", sf::Vector2u(800, 600))
+Game::Game() : m_window("Snake", sf::Vector2u(800, 600)),
+               m_snake(m_world.GetBlockSize()), m_world(sf::Vector2u(800, 600))
 {
-    m_circleTexture.loadFromFile("../sprites/Circle-Sprite.png");
-    m_circle.setTexture(m_circleTexture);
-    m_increment = sf::Vector2i(400, 400);
 }
 
 Game::~Game() {}
 
-void Game::HandleInput() {}
-
-void Game::Update()
+void Game::HandleInput()
 {
-    m_window.Update();
-    MoveShape();
-}
-
-void Game::MoveShape()
-{
-    sf::Vector2u l_windSize = m_window.GetWindowSize();
-    sf::Vector2u l_textureSize = m_circleTexture.getSize();
-
-    if ((m_circle.getPosition().x >
-             l_windSize.x - l_textureSize.x &&
-         m_increment.x > 0) ||
-        (m_circle.getPosition().x < 0 && m_increment.x < 0))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) &&
+        m_snake.GetDirection() != Direction::Down)
     {
-        m_increment.x = -m_increment.x;
+        m_snake.SetDirection(Direction::Up);
     }
-    if ((m_circle.getPosition().y >
-             l_windSize.y - l_textureSize.y &&
-         m_increment.y > 0) ||
-        (m_circle.getPosition().y < 0 && m_increment.y < 0))
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) &&
+             m_snake.GetDirection() != Direction::Up)
     {
-        m_increment.y = -m_increment.y;
+        m_snake.SetDirection(Direction::Down);
     }
-
-    float fElapsed = m_elapsed.asSeconds();
-
-    m_circle.setPosition(
-        m_circle.getPosition().x + (m_increment.x * fElapsed),
-        m_circle.getPosition().y + (m_increment.y * fElapsed));
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) &&
+             m_snake.GetDirection() != Direction::Right)
+    {
+        m_snake.SetDirection(Direction::Left);
+    }
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) &&
+             m_snake.GetDirection() != Direction::Left)
+    {
+        m_snake.SetDirection(Direction::Right);
+    }
 }
 
 void Game::Render()
 {
     m_window.BeginDraw();
-    m_window.Draw(m_circle);
+    m_world.Render(*m_window.GetRenderWindow());
+    m_snake.Render(*m_window.GetRenderWindow());
     m_window.EndDraw();
 }
 
@@ -57,4 +45,23 @@ Window *Game::GetWindow()
 }
 
 sf::Time Game::GetElapsed() { return m_elapsed; }
-void Game::RestartClock() { m_elapsed = m_clock.restart(); }
+void Game::RestartClock() { m_elapsed += m_clock.restart(); }
+
+void Game::Update()
+{
+    // m_window.Update();
+    // MoveShape();
+
+    float timestep = 1.0f / m_snake.GetSpeed();
+
+    if (m_elapsed.asSeconds() >= timestep)
+    {
+        m_snake.Tick();
+        m_world.Update(m_snake);
+        m_elapsed -= sf::seconds(timestep);
+        if (m_snake.HasLost())
+        {
+            m_snake.Reset();
+        }
+    }
+}

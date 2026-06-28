@@ -1,3 +1,4 @@
+#include "World.h"
 #include "Window.h"
 
 class Game
@@ -15,12 +16,9 @@ public:
     void RestartClock();
 
 private:
-    void MoveShape();
     Window m_window;
-    sf::Vector2i m_increment;
-    sf::Texture m_circleTexture;
-    sf::Sprite m_circle;
-    sf::Vector2u m_size;
+    World m_world;
+    Snake m_snake;
     sf::Clock m_clock;
     sf::Time m_elapsed;
 };
