@@ -1,5 +1,6 @@
 #include "World.h"
 #include "Window.h"
+#include "Textbox.h"
 
 class Game
 {
@@ -21,4 +22,5 @@ private:
     Snake m_snake;
     sf::Clock m_clock;
     sf::Time m_elapsed;
+    Textbox m_textbox;
 };
